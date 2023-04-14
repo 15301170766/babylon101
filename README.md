@@ -10,12 +10,12 @@
 
 ### 基本纹理概念(待补充)
 
-bump 凹凸纹理  
-normal 法线  
-AO 金属度  
-diffuse 漫反射  
-Rough 粗糙度  
-specular 镜面
+1.bump 凹凸纹理  
+2.normal 法线  
+3.AO 金属度  
+4.diffuse 漫反射  
+5.Rough 粗糙度  
+6.specular 镜面
 
 ### 免费素材地址:https://polyhaven.com/textures
 
@@ -29,8 +29,10 @@ specular 镜面
 1.下载的 blender 模型,导入到 blender 中,  
 2.配置勾选不要法向,不要动画,进行导出 3.把模型拖拽到:http://sandbox.babylonjs.com/ 进行查看
 
+### 矢量 3d 模型下载地址:https://www.kenney.nl
+
+# 注意事项
+
 ### 导入模型时,需要引入@babylonjs/loader
 
 否则 SceneLoader.ImportMesh()会报错
-
-### 矢量 3d 模型下载地址:https://www.kenney.nl
