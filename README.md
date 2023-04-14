@@ -8,18 +8,19 @@
 
 # 记录
 
-bump 凹凸纹理
-normal 法线
-AO 金属度
-diffuse 漫反射
-Rough 粗糙度
+bump 凹凸纹理  
+normal 法线  
+AO 金属度  
+diffuse 漫反射  
+Rough 粗糙度  
 specular 镜面
 
 ### 免费素材地址:https://polyhaven.com/textures
 
 ### PBR 环境场景
 
-1.首先下载 hdr 文件,然后在https://www.babylonjs.com/tools/ibl/#进行转换为env文件 2.再引入
+1.首先下载 hdr 文件,然后在https://www.babylonjs.com/tools/ibl/#进行转换为env文件  
+2.再引入
 
 ### 下载的 blender 文件 处理步骤
 
