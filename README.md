@@ -27,7 +27,8 @@
 ### 下载的 blender 文件 处理步骤
 
 1.下载的 blender 模型,导入到 blender 中,  
-2.配置勾选不要法向,不要动画,进行导出 3.把模型拖拽到:http://sandbox.babylonjs.com/ 进行查看
+2.配置勾选不要法向,不要动画,进行导出  
+3.把模型拖拽到:http://sandbox.babylonjs.com/ 进行查看
 
 ### 矢量 3d 模型下载地址:https://www.kenney.nl
 
