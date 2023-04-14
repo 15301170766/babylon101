@@ -36,7 +36,7 @@ export class BasicSence {
     hemLight.intensity = 0.5;
 
     const envTex = CubeTexture.CreateFromPrefilteredData(
-      "./public/environment/outDoor2.env",
+      "./environment/outDoor2.env",
       scene
     );
     scene.environmentTexture = envTex;
@@ -59,14 +59,14 @@ export class BasicSence {
     const uvScale = 2;
     const texArry: Texture[] = [];
     const diffuseTex = new Texture(
-      "./public/Materials/Ball/metal_plate_diff_1k.png",
+      "./Materials/Ball/metal_plate_diff_1k.png",
       this.scene
     );
     ballPBR.albedoTexture = diffuseTex;
     texArry.push(diffuseTex);
 
     const normalTex = new Texture(
-      "./public/Materials/Ball/metal_plate_nor_gl_1k.png",
+      "./Materials/Ball/metal_plate_nor_gl_1k.png",
       this.scene
     );
     texArry.push(normalTex);
@@ -80,7 +80,7 @@ export class BasicSence {
     ballPBR.useRoughnessFromMetallicTextureGreen = true;
     ballPBR.useMetallnessFromMetallicTextureBlue = true;
     const aoTex = new Texture(
-      "./public/Materials/Ball/metal_plate_arm_1k.png",
+      "./Materials/Ball/metal_plate_arm_1k.png",
       this.scene
     );
     ballPBR.ambientTexture = aoTex;
@@ -88,7 +88,7 @@ export class BasicSence {
 
     ballPBR.emissiveColor = new Color3(1, 1, 1);
     const emiTex = new Texture(
-      "./public/Materials/Ball/metal_plate_spec_1k.png",
+      "./Materials/Ball/metal_plate_spec_1k.png",
       this.scene
     );
     ballPBR.emissiveTexture = emiTex;
@@ -112,11 +112,11 @@ export class BasicSence {
   CreateAsphalt(): PBRMaterial {
     const pbr = new PBRMaterial("pbr", this.scene);
     pbr.albedoTexture = new Texture(
-      "./public/Materials/Asphalt/asphalt_02_diff_1k.png",
+      "./Materials/Asphalt/asphalt_02_diff_1k.png",
       this.scene
     );
     pbr.bumpTexture = new Texture(
-      "./public/Materials/Asphalt/asphalt_02_nor_gl_1k.png",
+      "./Materials/Asphalt/asphalt_02_nor_gl_1k.png",
       this.scene
     );
     // 纹理反转
@@ -129,7 +129,7 @@ export class BasicSence {
     pbr.useMetallnessFromMetallicTextureBlue = true;
 
     pbr.metallicTexture = new Texture(
-      "./public/Materials/Asphalt/asphalt_02_arm_1k.png",
+      "./Materials/Asphalt/asphalt_02_arm_1k.png",
       this.scene
     );
 

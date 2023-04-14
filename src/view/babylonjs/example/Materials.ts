@@ -50,7 +50,7 @@ export class BasicSence {
     const uvScale = 4;
     const texArry: Texture[] = [];
     const diffuseTex = new Texture(
-      "./public/Materials/Road/grassy_cobblestone_diff_1k.png",
+      "./Materials/Road/grassy_cobblestone_diff_1k.png",
       this.scene
     );
 
@@ -58,7 +58,7 @@ export class BasicSence {
     groundMat.diffuseTexture = diffuseTex;
 
     const normalTex = new Texture(
-      "./public/Materials/Road/grassy_cobblestone_nor_gl_1k.png",
+      "./Materials/Road/grassy_cobblestone_nor_gl_1k.png",
       this.scene
     );
     texArry.push(normalTex);
@@ -67,13 +67,13 @@ export class BasicSence {
     groundMat.invertNormalMapY = true;
 
     const aoTex = new Texture(
-      "./public/Materials/Road/grassy_cobblestone_ao_1k.png",
+      "./Materials/Road/grassy_cobblestone_ao_1k.png",
       this.scene
     );
     texArry.push(aoTex);
     groundMat.ambientTexture = aoTex;
     const specTex = new Texture(
-      "./public/Materials/Road/grassy_cobblestone_rough_1k.png",
+      "./Materials/Road/grassy_cobblestone_rough_1k.png",
       this.scene
     );
     texArry.push(specTex);
@@ -93,14 +93,14 @@ export class BasicSence {
     const uvScale = 2;
     const texArry: Texture[] = [];
     const diffuseTex = new Texture(
-      "./public/Materials/Ball/metal_plate_diff_1k.png",
+      "./Materials/Ball/metal_plate_diff_1k.png",
       this.scene
     );
 
     texArry.push(diffuseTex);
     ballMat.diffuseTexture = diffuseTex;
     const normalTex = new Texture(
-      "./public/Materials/Ball/metal_plate_nor_gl_1k.png",
+      "./Materials/Ball/metal_plate_nor_gl_1k.png",
       this.scene
     );
     texArry.push(normalTex);
@@ -110,13 +110,13 @@ export class BasicSence {
     ballMat.invertNormalMapY = true;
 
     const aoTex = new Texture(
-      "./public/Materials/Ball/metal_plate_ao_1k.png",
+      "./Materials/Ball/metal_plate_ao_1k.png",
       this.scene
     );
     texArry.push(aoTex);
     ballMat.ambientTexture = aoTex;
     const specTex = new Texture(
-      "./public/Materials/Ball/metal_plate_spec_1k.png",
+      "./Materials/Ball/metal_plate_spec_1k.png",
       this.scene
     );
     texArry.push(specTex);
