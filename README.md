@@ -19,13 +19,14 @@ specular 镜面
 
 ### PBR 环境场景
 
-1.首先在下 hdr 文件,然后在https://www.babylonjs.com/tools/ibl/#进行转换为env文件 2.再引入
+1.首先下载 hdr 文件,然后在https://www.babylonjs.com/tools/ibl/#进行转换为env文件 2.再引入
 
-### 下载的 blender 处理步骤
+### 下载的 blender 文件 处理步骤
 
-1.下载的 blender 模型,导入到 blender 中, 2.配置勾选不要法向,不要动画,进行导出 3.把模型拖拽到:http://sandbox.babylonjs.com/ 进行查看
+1.下载的 blender 模型,导入到 blender 中,  
+2.配置勾选不要法向,不要动画,进行导出 3.把模型拖拽到:http://sandbox.babylonjs.com/ 进行查看
 
-导入模型时,需要引入@babylonjs/loader
+### 导入模型时,需要引入@babylonjs/loader
 
 否则 SceneLoader.ImportMesh()会报错
 
