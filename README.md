@@ -1,18 +1,32 @@
-# Vue 3 + TypeScript + Vite
+# Vue 3 + TypeScript + Vite + babylonjs
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+指令:npm run dev
 
-## Recommended IDE Setup
+# 描述
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+通过 B 站学习 babylonjs,观看的资料为 <babylon101 课程>
 
-## Type Support For `.vue` Imports in TS
+# 记录
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+bump 凹凸纹理
+normal 法线
+AO 金属度
+diffuse 漫反射
+Rough 粗糙度
+specular 镜面
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+### 免费素材地址:https://polyhaven.com/textures
 
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+### PBR 环境场景
+
+1.首先在下 hdr 文件,然后在https://www.babylonjs.com/tools/ibl/#进行转换为env文件 2.再引入
+
+### 下载的 blender 处理步骤
+
+1.下载的 blender 模型,导入到 blender 中, 2.配置勾选不要法向,不要动画,进行导出 3.把模型拖拽到:http://sandbox.babylonjs.com/ 进行查看
+
+导入模型时,需要引入@babylonjs/loader
+
+否则 SceneLoader.ImportMesh()会报错
+
+### 矢量 3d 模型下载地址:https://www.kenney.nl
