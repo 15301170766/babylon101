@@ -256,9 +256,10 @@ export class BasicSence {
     );
     spotLight.intensity = 1.5;
     spotLight.shadowEnabled = true;
-    // spotLight.shadowMinZ = 1;
-    // spotLight.shadowMaxZ = 10;
+    spotLight.shadowMinZ = 1;
+    spotLight.shadowMaxZ = 10;
     const shadowGen = new ShadowGenerator(2048, spotLight);
+    shadowGen.useBlurCloseExponentialShadowMap = true; // 阴影模糊,需要搭配shadowMinZ来使用
     this.shadowGen = shadowGen;
     this.ball.receiveShadows = true;
     shadowGen.addShadowCaster(this.ball);

@@ -145,11 +145,30 @@ pointLight.parent = this.lightTubes[0];
 //pointClone.parent = this.lightTubes[newIndex];
 ```
 
+#### 聚光灯
+
+```js
+const spotLight = new SpotLight(
+  "spotLight",
+  new Vector3(0, 2, -8),
+  new Vector3(0, 1, 8),
+  Math.PI / 2,
+  10,
+  this.scene
+);
+
+spotLight.intensity = 1.5;
+spotLight.shadowEnabled = true;
+```
+
 #### 点光源制造影子
 
 ```js
-// 生成一个1024像素画质的影子
-const shadowGen = new ShadowGenerator(1024, spotLight);
+spotLight.shadowMinZ = 1;
+spotLight.shadowMaxZ = 10;
+// 生成一个2048像素画质的影子
+const shadowGen = new ShadowGenerator(2048, spotLight);
+shadowGen.useBlurCloseExponentialShadowMap = true; // 阴影模糊,需要搭配shadowMinZ来使用
 this.shadowGen = shadowGen;
 this.ball.receiveShadows = true;
 shadowGen.addShadowCaster(this.ball);
