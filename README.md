@@ -117,6 +117,49 @@ hemLight.groundColor = new Color3(0, 0, 1); // 地面光,可营造渐变日落�
 hemLight.specular = new Color3(0, 1, 0); // 模型上显示的反射光、色彩
 ```
 
+#### 方向光(有方向的光)
+
+```js
+const directionalLight = new DirectionalLight(
+  "dirLight",
+  new Vector3(0, -1, 1),
+  this.scene
+);
+```
+
+#### 点光源
+
+```js
+const pointLight = new PointLight(
+  "pointLight",
+  new Vector3(0, -0.2, 0),
+  this.scene
+);
+pointLight.diffuse = new Color3(172 / 255, 246 / 255, 183 / 255);
+pointLight.intensity = 0.4;
+pointLight.parent = this.lightTubes[0];
+
+// 克隆一个灯光
+// const pointClone = pointLight.clone("pointClone") as PointLight;
+// 重新设置父级
+//pointClone.parent = this.lightTubes[newIndex];
+```
+
+#### 点光源制造影子
+
+```js
+// 生成一个1024像素画质的影子
+const shadowGen = new ShadowGenerator(1024, spotLight);
+this.shadowGen = shadowGen;
+this.ball.receiveShadows = true;
+shadowGen.addShadowCaster(this.ball);
+// 给mesh模型循环添加影子
+this.models.map((mesh) => {
+  mesh.receiveShadows = true;
+  shadowGen.addShadowCaster(mesh);
+});
+```
+
 #### 加入辉光,即发光层
 
 ```js

@@ -19,6 +19,8 @@ import {
   GizmoManager,
   DirectionalLight,
   PointLight,
+  SpotLight,
+  ShadowGenerator,
 } from "@babylonjs/core";
 import "@babylonjs/loaders";
 
@@ -28,19 +30,14 @@ export class BasicSence {
   lightTubes!: AbstractMesh[];
   models!: AbstractMesh[];
   ball!: AbstractMesh;
+  shadowGen!: ShadowGenerator;
 
   constructor(private canvas: HTMLCanvasElement) {
     this.engine = new Engine(this.canvas, true);
     this.scene = this.CreateSence();
-    // this.CreateBarrel().then((meshs) => {
-    //   meshs[0].scaling = new Vector3(2, 2, 2);
-    //   meshs[0].position = new Vector3(2, 0, 0);
-    // });
-    // this.CreateBarrel().then((meshs) => {
-    //   meshs[0].scaling = new Vector3(2, 2, 2);
-    //   meshs[0].position = new Vector3(-2, 0, 0);
-    // });
     this.CreateBarrel().then((meshs) => {
+      meshs[0].receiveShadows = true;
+      this.shadowGen.addShadowCaster(meshs[0]);
       meshs[0].scaling = new Vector3(3, 3, 3);
       meshs[0].position = new Vector3(0, 0, 0);
     });
@@ -73,12 +70,23 @@ export class BasicSence {
       this.scene
     );
     ball.position = new Vector3(0, 2, -3);
-
-    // 加入发光层,有辉光
+    this.ball = ball;
+    this.CreateWall();
+    // // 加入发光层,有辉光
     // const glowLayer = new GlowLayer("glow", this.scene);
     // glowLayer.intensity = 1;
 
-    this.CreateWall();
+    this.CreateSideLight().then((res) => {
+      const pointLight = new PointLight(
+        "pointLight",
+        new Vector3(0, -0.2, 0),
+        this.scene
+      );
+      pointLight.diffuse = new Color3(172 / 255, 246 / 255, 183 / 255);
+      pointLight.intensity = 0.4;
+      pointLight.parent = this.lightTubes[0];
+    });
+
     this.CreateLights();
 
     return scene;
@@ -185,6 +193,10 @@ export class BasicSence {
     const boxRight = box.clone("boxRight");
     boxRight.position = new Vector3(5, 3, 0);
     boxRight.rotation.y = Math.PI / 2;
+    this.models = [];
+    this.models.push(box);
+    this.models.push(boxLeft);
+    this.models.push(boxRight);
   }
 
   async CreateBarrel(): Promise<AbstractMesh[]> {
@@ -218,14 +230,65 @@ export class BasicSence {
     // );
 
     // 点光源
-    const pointLight = new PointLight(
-      "pointLight",
-      new Vector3(-4, -2, -1),
+    // const pointLight = new PointLight(
+    //   "pointLight",
+    //   new Vector3(0, -0.2, 0),
+    //   this.scene
+    // );
+    // pointLight.diffuse = new Color3(172 / 255, 246 / 255, 183 / 255);
+    // pointLight.intensity = 0.4;
+    // pointLight.parent = this.lightTubes[0];
+
+    // 克隆一个灯光
+    // const pointClone = pointLight.clone("pointClone") as PointLight;
+    // 重新设置父级
+    //pointClone.parent = this.lightTubes[newIndex];
+
+    // 聚光灯
+
+    const spotLight = new SpotLight(
+      "spotLight",
+      new Vector3(0, 2, -8),
+      new Vector3(0, 1, 8),
+      Math.PI / 2,
+      10,
       this.scene
     );
-    pointLight.diffuse = new Color3(172 / 255, 246 / 255, 183 / 255);
-
+    spotLight.intensity = 1.5;
+    spotLight.shadowEnabled = true;
+    // spotLight.shadowMinZ = 1;
+    // spotLight.shadowMaxZ = 10;
+    const shadowGen = new ShadowGenerator(2048, spotLight);
+    this.shadowGen = shadowGen;
+    this.ball.receiveShadows = true;
+    shadowGen.addShadowCaster(this.ball);
+    this.models.map((mesh) => {
+      mesh.receiveShadows = true;
+      shadowGen.addShadowCaster(mesh);
+    });
     // this.CreateGizoms(hemLight);
+  }
+  // 加载侧栏灯
+  async CreateSideLight(): Promise<void> {
+    // ImportMeshAsync;
+    // 此处需要引入loader 否则会报错
+    const { meshes } = await SceneLoader.ImportMeshAsync(
+      "",
+      "./Model/",
+      "desk_lamp_arm_01_1k.glb",
+      this.scene
+    );
+    meshes[0].receiveShadows = true;
+    this.shadowGen.addShadowCaster(meshes[0]);
+    meshes[0].rotation = new Vector3(-Math.PI / 4, Math.PI / 2, 0);
+    meshes[0].scaling = new Vector3(2, 2, 2);
+    meshes[0].position = new Vector3(4.8, 3, 1);
+    this.lightTubes = meshes.filter(
+      (mesh) => mesh.name === "geo_lamp-head_primitive0"
+    );
+
+    console.log(this.lightTubes);
+    // meshes[0].translate
   }
   // 可拖拽动光的小工具
   CreateGizoms(customLight: Light): void {
