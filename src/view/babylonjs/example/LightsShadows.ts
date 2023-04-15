@@ -55,7 +55,8 @@ export class BasicSence {
       scene
     );
     camera.attachControl();
-    camera.speed = 0.1;
+    camera.speed = 0.01;
+    camera.minZ = 0.01; // 可以近距离观察模型
 
     const ground = MeshBuilder.CreateGround(
       "ground",

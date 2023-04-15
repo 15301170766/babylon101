@@ -87,7 +87,13 @@ await SceneLoader.ImportMeshAsync(
   "",
   "./Model/",
   "Barrel_01_2k.glb",
-  this.scene
+  this.scene,
+  (evt) => {
+    const total = evt.total; // 总的加载进度
+    const loaded = evt.loaded; // 当前加载进度
+    const progress = ((loaded * 100) / total).tofixed(); // 进度值百分比
+    // 可用于自定义加载动画
+  }
 );
 SceneLoader.ImportMesh(
   "",
@@ -189,8 +195,40 @@ glowLayer.intensity = 1;
 ### 相机
 
 ```js
-camera.attachControl(); // 相机的控制
-camera.speed = 0.25; // 相机的速度
+
+
+this.camera = new ArcRotateCamera(
+      "camera",
+      -Math.PI / 2,
+      Math.PI / 2,
+      3,
+      Vector3.Zero(),
+      this.scene
+    );
+    this.camera.attachControl(this.canvas, true);
+    this.camera.wheelPrecision = 100; // 滚轮速度
+    this.camera.minZ = 0.3; // 可查看最小距离,防止提前穿透模型
+
+    this.camera.lowerRadiusLimit = 2; // 控制可缩放的级别限制
+    this.camera.upperRadiusLimit = 6; // 控制可缩放的级别限制
+
+    this.camera.panningSensibility = 0; // 禁止右键平移模型
+
+    // this.camera.useBouncingBehavior = true; // 缩放达到limit,回弹到默认尺寸
+
+    // this.camera.useAutoRotationBehavior = true; // 自动旋转 当用户交互时,2秒后继续开始动画
+    // this.camera.autoRotationBehavior!.idleRotationSpeed = 1; // 旋转速度
+    // this.camera.autoRotationBehavior!.idleRotationSpinupTime = 4000; // 旋转速度从0缓慢上升到设定的旋转速度的时间
+    // this.camera.autoRotationBehavior!.idleRotationWaitTime = 4000; // 交互暂停间隔时间
+    // this.camera.autoRotationBehavior!.zoomStopsAnimation = true; // 缩放时也同样暂定动画
+
+
+
+    this.camera.useFramingBehavior = true; // 是否使用框架模式
+    // models.meshes[1].showBoundingBox = true; // 可以查看模型边界线
+    // this.camera.setTarget(models.meshes[1]); // 设置相机目标
+    this.camera.framingBehavior!.radiusScale = 2; // 相机观看模型的limit
+    this.camera.framingBehavior!.framingTime = 4000; // 相机观看模型limit过度时间
 ```
 
 ### 渲染器
@@ -199,6 +237,13 @@ camera.speed = 0.25; // 相机的速度
 this.engine.runRenderLoop(() => {
   this.scene.render();
 });
+```
+
+### 加载器
+
+```js
+this.engine.displayLoadingUI(); // 启用默认加载动画
+this.engine.hideLoadingUI(); // 关闭默认加载动画
 ```
 
 # 注意事项
