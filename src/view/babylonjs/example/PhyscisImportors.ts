@@ -21,8 +21,11 @@ import {
   PointLight,
   SpotLight,
   ShadowGenerator,
+  CannonJSPlugin,
+  PhysicsImpostor,
 } from "@babylonjs/core";
 import "@babylonjs/loaders";
+import * as CANNON from "cannon";
 
 export class BasicSence {
   scene: Scene;
@@ -30,6 +33,7 @@ export class BasicSence {
   lightTubes!: AbstractMesh[];
   models!: AbstractMesh[];
   ball!: AbstractMesh;
+  ground!: AbstractMesh;
   shadowGen!: ShadowGenerator;
 
   constructor(private canvas: HTMLCanvasElement) {
@@ -42,15 +46,16 @@ export class BasicSence {
       meshs[0].receiveShadows = true;
       meshs[0].scaling = new Vector3(1.3, 1.3, 1.3);
       meshs[0].position = new Vector3(-2, 0, 0);
+      this.CreateImportors();
     });
     this.run();
   }
   CreateSence(): Scene {
     const scene = new Scene(this.engine);
     this.CreateCamera();
-    this.CreateGround();
     this.CreateLights(scene);
     this.CreateBall();
+    this.CreateGround();
     this.CreateWall();
     this.CreateSideLight().then((res) => {
       const pointLight = new PointLight(
@@ -70,32 +75,28 @@ export class BasicSence {
       new Vector3(0, 1, 0),
       this.scene
     );
-    scene.onPointerDown = (evt) => {
-      // 鼠标左键点击
-      if (evt.button === 0) this.engine.enterPointerlock(); // 进入鼠标锁定模式
-      if (evt.button === 1) this.engine.exitPointerlock(); // 退出鼠标锁定模式(鼠标中键)
-    };
-
-    const framesPersecond = 60; // 设置帧率60
-    const gravity = -9.81; // 设置重力
-    scene.gravity = new Vector3(0, gravity / framesPersecond, 0); // y轴设置重力,可以施加一个平滑运动的重力效果
     scene.collisionsEnabled = true; // 开启碰撞检测
+    // 场景添加重力和物理反弹效果
+    scene.enablePhysics(
+      new Vector3(0, -9.81, 0),
+      new CannonJSPlugin(true, 10, CANNON)
+    );
   }
   CreateCamera(): void {
-    const camera = new FreeCamera("camera", new Vector3(-3, 2, -2), this.scene);
+    const camera = new FreeCamera("camera", new Vector3(0, 6, -20), this.scene);
     camera.attachControl();
     camera.minZ = 0.3; // 靠近物体的最小距离,防止穿模型
     camera.speed = 0.1; // 相机运动的速度
     camera.angularSensibility = 8000; // 相机旋转速度,越大越慢
-    camera.applyGravity = true; // 相机添加重力
+    // camera.applyGravity = true; // 相机添加重力
     camera.checkCollisions = true; // 相机添加碰撞检测
     camera.ellipsoid = new Vector3(1, 1, 1); // 将相机视为”长宽高为1“的一个椭圆物体
 
-    // 设置WASD 来控制上下左右
-    camera.keysUp.push(87);
-    camera.keysDown.push(65);
-    camera.keysLeft.push(83);
-    camera.keysRight.push(68);
+    // // 设置WASD 来控制上下左右
+    // camera.keysUp.push(87);
+    // camera.keysDown.push(65);
+    // camera.keysLeft.push(83);
+    // camera.keysRight.push(68);
   }
   CreateGround(): void {
     const ground = MeshBuilder.CreateGround(
@@ -105,14 +106,54 @@ export class BasicSence {
     );
     ground.checkCollisions = true; //开启碰撞检测
     ground.material = this.CreateGroundMaterials();
+    this.ground = ground;
+  }
+
+  CreateImportors(): void {
+    this.ball.physicsImpostor = new PhysicsImpostor(
+      this.ball,
+      PhysicsImpostor.BoxImpostor,
+      {
+        mass: 1, // 物体质量 不可移动的物体可以设置为0
+        friction: 0.001, // 物体摩擦力
+        restitution: 0.5, // 碰撞恢复
+      }
+    );
+    // this.ground.isVisible = false; // 可是设置物体是否可见
+    // this.ground.visibility = 1; // 可是设置物体透明度
+    this.ground.physicsImpostor = new PhysicsImpostor(
+      this.ground,
+      PhysicsImpostor.BoxImpostor,
+      {
+        mass: 0, // 物体质量
+        friction: 0.1, // 物体摩擦力
+        restitution: 0.5, // 碰撞恢复
+      }
+    );
+
+    const box = MeshBuilder.CreateBox(
+      "box",
+      { width: 0.4, height: 0.4 },
+      this.scene
+    );
+    box.position = new Vector3(0.2, 5, -3);
+    box.physicsImpostor = new PhysicsImpostor(
+      box,
+      PhysicsImpostor.BoxImpostor,
+      {
+        mass: 1, // 物体质量
+        friction: 0.1, // 物体摩擦力
+        restitution: 0.5, // 碰撞恢复
+      }
+    );
   }
   CreateBall(): void {
     const ball = MeshBuilder.CreateSphere(
       "ball",
-      { diameter: 1.5 },
+      { diameter: 0.5 },
       this.scene
     );
-    ball.position = new Vector3(0, 1, -3);
+    ball.position = new Vector3(0, 3, -3);
     this.ball = ball;
     ball.checkCollisions = true; //开启碰撞检测
   }
@@ -225,6 +266,33 @@ export class BasicSence {
     box.checkCollisions = true; //开启碰撞检测
     boxLeft.checkCollisions = true; //开启碰撞检测
     boxRight.checkCollisions = true; //开启碰撞检测
+    box.physicsImpostor = new PhysicsImpostor(
+      box,
+      PhysicsImpostor.BoxImpostor,
+      {
+        mass: 0, // 物体质量
+        friction: 0, // 物体摩擦力
+        restitution: 0.5, // 碰撞恢复
+      }
+    );
+    boxLeft.physicsImpostor = new PhysicsImpostor(
+      boxLeft,
+      PhysicsImpostor.BoxImpostor,
+      {
+        mass: 0, // 物体质量
+        friction: 0, // 物体摩擦力
+        restitution: 0.5, // 碰撞恢复
+      }
+    );
+    boxRight.physicsImpostor = new PhysicsImpostor(
+      boxRight,
+      PhysicsImpostor.BoxImpostor,
+      {
+        mass: 0, // 物体质量
+        friction: 0, // 物体摩擦力
+        restitution: 0.5, // 碰撞恢复
+      }
+    );
   }
 
   async CreateBarrel(): Promise<AbstractMesh[]> {

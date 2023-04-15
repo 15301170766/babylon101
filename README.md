@@ -106,6 +106,9 @@ SceneLoader.ImportMesh(
   onSuccess(),
   onError()
 );
+
+// models.isVisible = false; // 可是设置物体是否可见
+// models.visibility = 1; // 可是设置物体透明度
 ```
 
 #### 调整贴图的密度尺寸
@@ -340,6 +343,27 @@ const gravity = -9.81; // 设置重力
 // y轴设置重力,可以施加一个平滑运动的重力效果 ==>camera、meshes 也要添加重力效果
 scene.gravity = new Vector3(0, gravity / framesPersecond, 0);
 scene.collisionsEnabled = true; // 开启碰撞检测 ==>camera、meshes 也要添加碰撞检测
+```
+
+#### 物体碰撞
+
+```js
+this.ball.physicsImpostor = new PhysicsImpostor(
+  this.ball,
+  PhysicsImpostor.BoxImpostor,
+  {
+    mass: 1, // 物体质量 不可移动的物体可以设置为0
+    friction: 0.001, // 物体摩擦力
+    restitution: 0.5, // 碰撞恢复
+  }
+);
+
+// 添加插件 cannon @types/cannon
+// 场景添加重力和物理反弹效果
+scene.enablePhysics(
+  new Vector3(0, -9.81, 0),
+  new CannonJSPlugin(true, 10, CANNON)
+);
 ```
 
 ### 加载器
