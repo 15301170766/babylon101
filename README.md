@@ -194,6 +194,16 @@ glowLayer.intensity = 1;
 
 ### 相机
 
+#### free 相机
+
+```js
+const camera = new FreeCamera("camera", new Vector3(0, 1, -5));
+camera.attachControl();
+camera.speed = 0.25;
+```
+
+#### 自由移动相机
+
 ```js
 
 
@@ -229,6 +239,66 @@ this.camera = new ArcRotateCamera(
     // this.camera.setTarget(models.meshes[1]); // 设置相机目标
     this.camera.framingBehavior!.radiusScale = 2; // 相机观看模型的limit
     this.camera.framingBehavior!.framingTime = 4000; // 相机观看模型limit过度时间
+```
+
+### 事件绑定 action
+
+#### 点击事件
+
+```js
+models.actionManager = new ActionManager(this.scene); // 注册事件管理
+// 绑定事件
+models.actionManager.registerAction(
+  new SetValueAction(
+    ActionManager.OnPickDownTrigger, // 点击事件
+    models,
+    "scaling",
+    new Vector3(3, 3, 3) // 缩放3倍
+  )
+);
+```
+
+#### 根据持续时间发生事件
+
+```js
+  models.actionManager = new ActionManager(this.scene); // 注册事件管理
+    // 绑定事件
+    models.actionManager
+      .registerAction(
+        new InterpolateValueAction(
+          ActionManager.OnPickDownTrigger, // 点击事件
+          models,
+          "roughness",
+          0,
+          3000
+        )
+      )!
+      .then(
+        // 再次点击事件
+        new InterpolateValueAction(
+          ActionManager.NothingTrigger,
+          models,
+          "roughness",
+          1,
+          3000
+        )
+      );
+```
+
+#### 自动触发事件,根据渲染帧率自动发生
+
+```js
+this.scene.actionManager = new ActionManager(this.scene); // 注册事件管理
+// 绑定事件
+this.scene.actionManager.registerAction(
+  // 给scene注册事件
+  new IncrementValueAction(
+    ActionManager.OnEveryFrameTrigger, // 每帧自动触发的事件
+    models,
+    "rotation.y",
+    0.01
+  )
+);
 ```
 
 ### 渲染器
