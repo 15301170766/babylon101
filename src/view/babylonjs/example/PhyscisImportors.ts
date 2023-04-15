@@ -44,7 +44,7 @@ export class BasicSence {
         mesh.checkCollisions = true; //开启碰撞检测
       });
       meshs[0].receiveShadows = true;
-      meshs[0].scaling = new Vector3(1.3, 1.3, 1.3);
+      meshs[0].scaling = new Vector3(2, 2, 2);
       meshs[0].position = new Vector3(-2, 0, 0);
       this.CreateImportors();
     });
@@ -83,7 +83,7 @@ export class BasicSence {
     );
   }
   CreateCamera(): void {
-    const camera = new FreeCamera("camera", new Vector3(0, 6, -20), this.scene);
+    const camera = new FreeCamera("camera", new Vector3(0, 3, -13), this.scene);
     camera.attachControl();
     camera.minZ = 0.3; // 靠近物体的最小距离,防止穿模型
     camera.speed = 0.1; // 相机运动的速度
@@ -91,7 +91,6 @@ export class BasicSence {
     // camera.applyGravity = true; // 相机添加重力
     camera.checkCollisions = true; // 相机添加碰撞检测
     camera.ellipsoid = new Vector3(1, 1, 1); // 将相机视为”长宽高为1“的一个椭圆物体
-
     // // 设置WASD 来控制上下左右
     // camera.keysUp.push(87);
     // camera.keysDown.push(65);
