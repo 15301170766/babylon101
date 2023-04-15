@@ -21,7 +21,8 @@
 
 ### PBR 环境场景
 
-1.首先下载 hdr 文件,然后在https://www.babylonjs.com/tools/ibl/#进行转换为env文件  
+1.首先下载 hdr 文件,然后在https://www.babylonjs.com/tools/ibl/  
+1.1#进行转换为 env 文件  
 2.再引入
 
 ### 下载的 blender 文件 处理步骤
@@ -31,6 +32,8 @@
 3.把模型拖拽到:http://sandbox.babylonjs.com/ 进行查看
 
 ### 矢量 3d 模型下载地址:https://www.kenney.nl
+
+### 键盘数字对应查询 https://www.toptal.com/developers/keycode
 
 # 常用方法
 
@@ -197,9 +200,23 @@ glowLayer.intensity = 1;
 #### free 相机
 
 ```js
-const camera = new FreeCamera("camera", new Vector3(0, 1, -5));
+const camera = new FreeCamera("camera", new Vector3(2, 2, 1), this.scene);
 camera.attachControl();
-camera.speed = 0.25;
+camera.minZ = 0.3; // 靠近物体的最小距离,防止穿模型
+camera.speed = 0.5; // 相机运动的速度
+camera.angularSensibility = 4000; // 相机旋转速度,越大越慢
+camera.applyGravity = true; // 相机添加重力  ==>scene 也要添加重力效果
+camera.checkCollisions = true; // 相机添加碰撞检测 ===>scene 也要添加碰撞检测
+// 对应的模型也要开启碰撞检测;
+//  meshs.map((mesh) => {
+//         mesh.checkCollisions = true; //开启碰撞检测
+//       });
+camera.ellipsoid = new Vector3(1, 1, 1); // 将相机视为”长宽高为1“的一个椭圆物体
+// 设置WASD 来控制上下左右
+camera.keysUp.push(87);
+camera.keysDown.push(65);
+camera.keysLeft.push(83);
+camera.keysRight.push(68);
 ```
 
 #### 自由移动相机
@@ -307,6 +324,22 @@ this.scene.actionManager.registerAction(
 this.engine.runRenderLoop(() => {
   this.scene.render();
 });
+```
+
+#### 设置重力效果(y 轴)
+
+```js
+scene.onPointerDown = (evt) => {
+  // 鼠标左键点击
+  if (evt.button === 0) this.engine.enterPointerlock(); // 进入鼠标锁定模式
+  if (evt.button === 1) this.engine.exitPointerlock(); // 退出鼠标锁定模式(鼠标中键)
+};
+
+const framesPersecond = 60; // 设置帧率60
+const gravity = -9.81; // 设置重力
+// y轴设置重力,可以施加一个平滑运动的重力效果 ==>camera、meshes 也要添加重力效果
+scene.gravity = new Vector3(0, gravity / framesPersecond, 0);
+scene.collisionsEnabled = true; // 开启碰撞检测 ==>camera、meshes 也要添加碰撞检测
 ```
 
 ### 加载器
