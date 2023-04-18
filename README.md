@@ -366,6 +366,63 @@ scene.enablePhysics(
 );
 ```
 
+#### 碰撞事件注册
+
+```js
+box.physicsImpostor.registerOnPhysicsCollide(
+  this.ball.physicsImpostor,
+  this.DetectCollisions
+);
+```
+
+#### 碰撞事件注销
+
+```js
+// 注销碰撞
+box.physicsImpostor.unregisterOnPhysicsCollide(
+  this.ball.physicsImpostor,
+  this.DetectCollisions
+);
+```
+
+#### 多个碰撞注册
+
+```js
+box.physicsImpostor.registerOnPhysicsCollide(
+  [this.ball.physicsImpostor, this.ground.physicsImpostor],
+  this.DetectCollisions
+);
+```
+
+#### 碰撞回调
+
+```js
+DetectCollisions(boxCol: PhysicsImpostor, colAgainst: any): void {
+    // boxCol.object.scaling = new Vector3(3, 3, 3); // 碰撞放大
+    // boxCol.setScalingUpdated(); // 更新放大后的模型,防止穿模型
+    const redMat = new StandardMaterial("mat", this.scene);
+    redMat.diffuseColor = new Color3(1, 0, 0);
+    (colAgainst.object as AbstractMesh).material = redMat;
+  }
+
+```
+
+#### 模型交叉检测
+
+```js
+//模型是否发生交叉,持续监测
+   DetectTrigger(): void {
+    let count = 0;
+    this.scene.registerBeforeRender(() => {
+      // 持续监测
+      if (box.intersectsMesh(this.ball)) count++;
+      if (count === 1) {
+        console.log(box.intersectsMesh(this.ball)); // 模型是否发生交叉
+      }
+    });
+  }
+```
+
 ### 加载器
 
 ```js

@@ -6,7 +6,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { BasicSence } from "./example/PhyscisImportors";
+import { BasicSence } from "./example/CollisionsTriggers";
 onMounted(() => {
   let canvas = document.getElementById("babylonCanvas") as HTMLCanvasElement;
   new BasicSence(canvas);
