@@ -423,6 +423,31 @@ DetectCollisions(boxCol: PhysicsImpostor, colAgainst: any): void {
   }
 ```
 
+#### 给模型加上速度
+
+```js
+
+  meshes[0].setParent(rocketCol); // 设置模型的上级
+    rocketCol.rotate(Vector3.Forward(), 1.5); // 角度倾斜
+    const rocketPhysics = () => {
+      this.camera.position = new Vector3(
+        rocketCol.position.x,
+        rocketCol.position.y,
+        this.camera.position.z
+      ); // 相机跟踪
+      rocketCol.physicsImpostor!.setLinearVelocity(rocketCol.up.scale(5)); // 沿着y轴上升1
+      rocketCol.physicsImpostor!.setAngularVelocity(rocketCol.up); //模型旋转
+    };
+    let gameOver = false;
+    if (!gameOver) {
+      this.scene.registerBeforeRender(rocketPhysics); // 注册一个每帧触发的事件
+    }
+    this.scene.onPointerDown = () => {
+      gameOver = true;
+      this.scene.unregisterBeforeRender(rocketPhysics); // 注册一个每帧触发的事件
+    };
+```
+
 ### 加载器
 
 ```js
