@@ -448,6 +448,59 @@ DetectCollisions(boxCol: PhysicsImpostor, colAgainst: any): void {
     };
 ```
 
+#### 给模型添加力
+
+```js
+// 先给物体添加质量
+box.physicsImpostor = new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, {
+  mass: 0.5, // 物体质量
+  friction: 1, // 物体摩擦力
+});
+//
+box.actionManager = new ActionManager(this.scene); // 注册事件
+box.actionManager.registerAction(
+  // 通过点击在相对位置添加一个力
+  // add为追加方向力
+  new ExecuteCodeAction(ActionManager.OnPickDownTrigger, () => {
+    box.physicsImpostor?.applyImpulse(
+      new Vector3(-3, 0, 0),
+      box.getAbsolutePosition().add(new Vector3(0, 2, 0))
+    );
+  })
+);
+```
+
+#### 射击小球
+
+```js
+   const clone = this.cannonBall.clone("cloneBall");
+    clone.position = this.camera.position;
+    // 启用小球
+    clone.setEnabled(true);
+    // 在相机的位置发射
+    clone.physicsImpostor?.applyForce(
+      this.camera.getForwardRay().direction.scale(1000),
+      clone.getAbsolutePosition()
+    );
+    // 接触地板后,3秒后消失
+    clone.physicsImpostor?.registerOnPhysicsCollide(
+      this.ground.physicsImpostor as PhysicsImpostor,
+      () => {
+        setTimeout(() => {
+          clone.dispose();
+        }, 3000);
+      }
+    );
+
+
+  // 左键注册发射
+    scene.onPointerDown = (evt) => {
+      if (evt.button === 2) {
+        this.ShootCannonBall();
+      }
+    };
+```
+
 ### 加载器
 
 ```js
@@ -459,4 +512,15 @@ this.engine.hideLoadingUI(); // 关闭默认加载动画
 
 ### 导入模型时,需要引入@babylonjs/loader
 
+```js
 否则 SceneLoader.ImportMesh()会报错
+```
+
+#### ammojs 问题 @1.0.6
+
+```js
+// 修改最后一句 this.Ammo = b ==> Ammo = b
+const ammo = await Ammo();
+const phyics = new AmmoJSPlugin(true, ammo);
+scene.enablePhysics(new Vector3(0, -9.81, 0), phyics);
+```

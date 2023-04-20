@@ -16,6 +16,8 @@
     "@babylonjs/loaders": "^5.55.0",
     "@types/cannon": "^0.1.8",
     "@vitejs/plugin-vue": "^4.1.0",
+    "ammo.js": "github:kripken/ammo.js",
+    "ammojs-typed": "^1.0.6",
     "cannon": "^0.6.2",
     "typescript": "^4.9.3",
     "vite": "^4.2.0",

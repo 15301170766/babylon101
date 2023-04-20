@@ -5,28 +5,19 @@ import {
   FreeCamera,
   HemisphericLight,
   MeshBuilder,
-  CubeTexture,
   SceneLoader,
   Texture,
   StandardMaterial,
-  SubMesh,
-  ArcRotateCamera,
   AbstractMesh,
-  GlowLayer,
   Color3,
-  Light,
-  LightGizmo,
-  GizmoManager,
-  DirectionalLight,
-  PointLight,
-  SpotLight,
+  PBRMaterial,
   ShadowGenerator,
-  CannonJSPlugin,
   PhysicsImpostor,
+  Mesh,
+  AmmoJSPlugin,
 } from "@babylonjs/core";
 import "@babylonjs/loaders";
-import * as CANNON from "cannon";
-
+import { Ammo } from "../plugin/ammojs";
 export class BasicSence {
   scene: Scene;
   engine: Engine;
@@ -35,6 +26,8 @@ export class BasicSence {
   ball!: AbstractMesh;
   ground!: AbstractMesh;
   shadowGen!: ShadowGenerator;
+  cannonBall!: Mesh;
+  camera!: FreeCamera;
 
   constructor(private canvas: HTMLCanvasElement) {
     this.engine = new Engine(this.canvas, true);
@@ -46,27 +39,23 @@ export class BasicSence {
       meshs[0].receiveShadows = true;
       meshs[0].scaling = new Vector3(2, 2, 2);
       meshs[0].position = new Vector3(-2, 0, 0);
-      this.CreateImportors();
     });
     this.run();
   }
   CreateSence(): Scene {
     const scene = new Scene(this.engine);
+
     this.CreateCamera();
     this.CreateLights(scene);
-    this.CreateBall();
+
     this.CreateGround();
-    this.CreateWall();
-    this.CreateSideLight().then((res) => {
-      const pointLight = new PointLight(
-        "pointLight",
-        new Vector3(0, -0.2, 0),
-        this.scene
-      );
-      pointLight.diffuse = new Color3(172 / 255, 246 / 255, 183 / 255);
-      pointLight.intensity = 0.4;
-      pointLight.parent = this.lightTubes[0];
-    });
+    this.CreatePhysics(scene);
+
+    scene.onPointerDown = (evt) => {
+      if (evt.button === 2) {
+        this.ShootCannonBall();
+      }
+    };
     return scene;
   }
   CreateLights(scene: Scene): void {
@@ -76,11 +65,6 @@ export class BasicSence {
       this.scene
     );
     scene.collisionsEnabled = true; // 开启碰撞检测
-    // 场景添加重力和物理反弹效果
-    scene.enablePhysics(
-      new Vector3(0, -9.81, 0),
-      new CannonJSPlugin(true, 10, CANNON)
-    );
   }
   CreateCamera(): void {
     const camera = new FreeCamera("camera", new Vector3(0, 3, -13), this.scene);
@@ -91,33 +75,26 @@ export class BasicSence {
     // camera.applyGravity = true; // 相机添加重力
     camera.checkCollisions = true; // 相机添加碰撞检测
     camera.ellipsoid = new Vector3(1, 1, 1); // 将相机视为”长宽高为1“的一个椭圆物体
-    // // 设置WASD 来控制上下左右
-    // camera.keysUp.push(87);
-    // camera.keysDown.push(65);
-    // camera.keysLeft.push(83);
-    // camera.keysRight.push(68);
+    this.camera = camera;
   }
   CreateGround(): void {
-    const ground = MeshBuilder.CreateGround(
+    this.ground = MeshBuilder.CreateGround(
       "ground",
       { width: 10, height: 10 },
       this.scene
     );
-    ground.checkCollisions = true; //开启碰撞检测
-    ground.material = this.CreateGroundMaterials();
-    this.ground = ground;
+    this.ground.checkCollisions = true; //开启碰撞检测
+    this.ground.material = this.CreateGroundMaterials();
   }
-
+  async CreatePhysics(scene: Scene): Promise<void> {
+    const ammo = await Ammo();
+    const phyics = new AmmoJSPlugin(true, ammo);
+    scene.enablePhysics(new Vector3(0, -9.81, 0), phyics);
+    this.CreateImportors();
+    this.CreateWall();
+    this.CreateCannonBall();
+  }
   CreateImportors(): void {
-    this.ball.physicsImpostor = new PhysicsImpostor(
-      this.ball,
-      PhysicsImpostor.BoxImpostor,
-      {
-        mass: 1, // 物体质量 不可移动的物体可以设置为0
-        friction: 0.001, // 物体摩擦力
-        restitution: 0.5, // 碰撞恢复
-      }
-    );
     this.ground.physicsImpostor = new PhysicsImpostor(
       this.ground,
       PhysicsImpostor.BoxImpostor,
@@ -127,32 +104,76 @@ export class BasicSence {
         restitution: 0.5, // 碰撞恢复
       }
     );
-
-    const box = MeshBuilder.CreateBox(
-      "box",
-      { width: 0.4, height: 0.4 },
-      this.scene
-    );
-    box.position = new Vector3(0.2, 5, -3);
+    this.CreateImpulse();
+  }
+  CreateImpulse(): void {
+    const box = MeshBuilder.CreateBox("box", { height: 4 }, this.scene);
+    const baxMat = new PBRMaterial("boxmat", this.scene);
+    baxMat.roughness = 1;
+    baxMat.albedoColor = new Color3(1, 0.5, 0);
+    box.material = baxMat;
     box.physicsImpostor = new PhysicsImpostor(
       box,
       PhysicsImpostor.BoxImpostor,
       {
-        mass: 1, // 物体质量
-        friction: 0.1, // 物体摩擦力
-        restitution: 0.5, // 碰撞恢复
+        mass: 0.5, // 物体质量
+        friction: 1, // 物体摩擦力
       }
     );
+
+    // box.actionManager = new ActionManager(this.scene); // 注册事件
+    // box.actionManager.registerAction(
+    //   new ExecuteCodeAction(ActionManager.OnPickDownTrigger, () => {
+    //     box.physicsImpostor?.applyImpulse(
+    //       new Vector3(-3, 0, 0),
+    //       box.getAbsolutePosition().add(new Vector3(0, 2, 0)) // 通过点击在相对位置添加一个力// add为追加方向力
+    //     );
+    //   })
+    // );
   }
-  CreateBall(): void {
-    const ball = MeshBuilder.CreateSphere(
-      "ball",
+  CreateCannonBall(): void {
+    this.cannonBall = MeshBuilder.CreateSphere(
+      "cannonBall",
       { diameter: 0.5 },
       this.scene
     );
-    ball.position = new Vector3(0, 3, -3);
-    this.ball = ball;
-    ball.checkCollisions = true; //开启碰撞检测
+    const ballMat = new PBRMaterial("boxmat", this.scene);
+    ballMat.roughness = 1;
+    ballMat.albedoColor = new Color3(5, 0.5, 0);
+    this.cannonBall.material = ballMat;
+    this.cannonBall.position = new Vector3(0, 3, -3);
+
+    this.cannonBall.physicsImpostor = new PhysicsImpostor(
+      this.cannonBall,
+      PhysicsImpostor.BoxImpostor,
+      {
+        mass: 1, // 物体质量 不可移动的物体可以设置为0
+        friction: 1, // 物体摩擦力
+      }
+    );
+
+    this.cannonBall.position = this.camera.position;
+    this.cannonBall.setEnabled(false);
+  }
+  ShootCannonBall(): void {
+    const clone = this.cannonBall.clone("cloneBall");
+    clone.position = this.camera.position;
+    // 启用小球
+    clone.setEnabled(true);
+    // 在相机的位置发射
+    clone.physicsImpostor?.applyForce(
+      this.camera.getForwardRay().direction.scale(1000),
+      clone.getAbsolutePosition()
+    );
+    // 接触地板后,3秒后消失
+    clone.physicsImpostor?.registerOnPhysicsCollide(
+      this.ground.physicsImpostor as PhysicsImpostor,
+      () => {
+        setTimeout(() => {
+          clone.dispose();
+        }, 3000);
+      }
+    );
   }
   CreateGroundMaterials(): StandardMaterial {
     const groundMat = new StandardMaterial("groundMat", this.scene);
@@ -326,31 +347,8 @@ export class BasicSence {
     });
 
     console.log(this.lightTubes);
-    // meshes[0].translate
   }
-  // 可拖拽动光的小工具
-  CreateGizoms(customLight: Light): void {
-    const lightGizmo = new LightGizmo();
-    lightGizmo.scaleRatio = 2;
-    lightGizmo.light = customLight;
-
-    const gizmoManager = new GizmoManager(this.scene);
-    gizmoManager.positionGizmoEnabled = true;
-    gizmoManager.rotationGizmoEnabled = true;
-    gizmoManager.usePointerToAttachGizmos = false;
-    gizmoManager.attachToMesh(lightGizmo.attachedMesh);
-  }
-
-  debug(debugOn: boolean = true) {
-    if (debugOn) {
-      this.scene.debugLayer.show({ overlay: true });
-    } else {
-      this.scene.debugLayer.hide();
-    }
-  }
-
   run() {
-    // this.debug(true);
     this.engine.runRenderLoop(() => {
       this.scene.render();
     });
