@@ -501,6 +501,39 @@ box.actionManager.registerAction(
     };
 ```
 
+#### 创造射线
+
+```js
+this.scene.onPointerDown = () => {
+      // 创造射线
+      const ray = this.scene.createPickingRay(
+        this.scene.pointerX,
+        this.scene.pointerY,
+        Matrix.Identity(),
+        this.camera
+      );
+
+      const raycastHit = this.scene.pickWithRay(ray) as PickingInfo;
+      if (raycastHit.hit && raycastHit.pickedMesh!.name === "boxBox") {
+        // 创建一个图层
+        const decal = MeshBuilder.CreateDecal("decal", raycastHit.pickedMesh, {
+          position: raycastHit.pickedPoint,
+          normal: raycastHit.getNormal(true),
+          size: new Vector3(1, 1, 1),
+        });
+        // 随机的贴图
+        decal.material =
+          this.splatters[Math.floor(Math.random() * this.splatters.length)];
+        // 设置图层的上级为点击的小球,让贴图可以跟随小球运动
+        decal.setParent(raycastHit.pickedMesh);
+        raycastHit.pickedMesh?.physicsImpostor?.applyImpulse(
+          ray.direction.scale(2),
+          raycastHit.pickedPoint
+        );
+      }
+    };
+```
+
 ### 加载器
 
 ```js
