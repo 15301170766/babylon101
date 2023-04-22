@@ -641,6 +641,38 @@ animationGroups[0].stop();
 animationGroups[0].play(true);
 ```
 
+#### 场景动画
+
+```js
+ // 转场动画
+  async CreateCutsence(scene: Scene): Promise<void> {
+    const canKeys = [];
+    const fps = 60;
+    const carAnim = new Animation(
+      "carAnim",
+      "position",
+      fps,
+      Animation.ANIMATIONTYPE_VECTOR3,
+      Animation.ANIMATIONLOOPMODE_CYCLE
+    );
+    canKeys.push({ frame: 0, value: new Vector3(3, 2, -3) });
+    canKeys.push({ frame: 5 * fps, value: new Vector3(-3, 2, -3) });
+    canKeys.push({ frame: 3 * fps, value: new Vector3(-3, 2, -3) });
+    canKeys.push({ frame: 12 * fps, value: new Vector3(0, 3, -13) });
+    carAnim.setKeys(canKeys);
+    this.camera.animations.push(carAnim);
+    await scene.beginAnimation(this.camera, 0, 12 * fps).waitAsync();
+    this.CutsenceEnd();
+  }
+  CutsenceEnd(): void {
+    this.camera.attachControl();
+    // 停止默认动画
+    this.animationGroups[1].stop();
+    // 播放动画(true:循环播放)
+    this.animationGroups[2].play(true);
+  }
+```
+
 # 注意事项
 
 ### 导入模型时,需要引入@babylonjs/loader
