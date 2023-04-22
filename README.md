@@ -19,6 +19,17 @@
 
 ### 免费素材地址:https://polyhaven.com/textures
 
+### 模型贴图材料:https://www.kenney.nl
+
+### 模型动画:https://www.mixamo.com/
+
+```js
+1.先上传kenney下载的模型
+2.选择动画
+3.下载
+3.1 下载时调整参数为60帧,without skin
+```
+
 ### PBR 环境场景
 
 1.首先下载 hdr 文件,然后在https://www.babylonjs.com/tools/ibl/  
@@ -613,12 +624,41 @@ await this.scene
 AnimationControll.stop();
 ```
 
+#### 导入带有动画的模型
+
+```js
+const { meshes, animationGroups } = await SceneLoader.ImportMeshAsync(
+  "",
+  "./Model/",
+  "jiangShi.glb",
+  this.scene
+);
+// 旋转模型
+meshes[0].rotate(Vector3.Up(), Math.PI);
+// 停止默认动画
+animationGroups[0].stop();
+// 播放动画(true:循环播放)
+animationGroups[0].play(true);
+```
+
 # 注意事项
 
 ### 导入模型时,需要引入@babylonjs/loader
 
 ```js
 否则 SceneLoader.ImportMesh()会报错
+```
+
+### 制作带动画的模型
+
+```js
+// 使用kenney下载模型
+// 在mixamo导入kenney模型并选择动画下载,调整下载参数
+// 在blender中导入kenney模型,并选择着色器,
+// 选择添加图片纹理,调整参数(环境色为黑色,阿尔法通道为1,roughness为1)
+// 导入mixamo动画,然后重命名,再删除
+// 统一为模型添加导入的动画
+// 导出glb文件可用
 ```
 
 #### ammojs 问题 @1.0.6
