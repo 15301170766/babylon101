@@ -718,6 +718,57 @@ attactAnim.addEvent(attactEvent);
     };
 ```
 
+### 背景音乐
+
+#### 设置背景音乐\自动播放\播放声音
+
+```js
+// 设置背景音乐,和自动播放,和播放声音
+const backgroundMusic = new Sound(
+  "backgroundMusic",
+  "./mp3/Letting.mp3",
+  this.scene,
+  null,
+  {
+    volume: 0,
+    autoplay: true,
+  }
+);
+// 30秒,音量从0渐变道0.75
+backgroundMusic.setVolume(0.75, 30);
+```
+
+#### 设置背景音乐,固定在目标位置
+
+```js
+// 设置背景音乐,固定在目标位置
+const backgroundMusic = new Sound(
+  "backgroundMusic",
+  "./mp3/Letting.mp3",
+  this.scene,
+  null,
+  {
+    spatialSound: true, //离目标越近,声音越大
+    maxDistance: 10, // 最远距离为10
+    volume: 1,
+    autoplay: true,
+  }
+);
+// 绑定在模型上,可以跟随模型移动
+// backgroundMusic.attachToMesh(this.models[0]);
+// 设置在某个固定位置上
+backgroundMusic.setPosition(new Vector3(-7, 0, 0));
+// 设置播放速度 1为默认值
+backgroundMusic.setPlaybackRate(1);
+// 判断是否正在播放
+// backgroundMusic.isPlaying
+// 主动播放音乐
+scene.onPointerDown = (evt) => {
+  if (evt.button === 2) backgroundMusic.pause();
+  if (evt.button === 1) backgroundMusic.play();
+};
+```
+
 # 注意事项
 
 ### 导入模型时,需要引入@babylonjs/loader
