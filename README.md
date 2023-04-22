@@ -111,6 +111,31 @@ SceneLoader.ImportMesh(
 // models.visibility = 1; // 可是设置物体透明度
 ```
 
+#### 模型合并,用于动画时
+
+```js
+const { meshes } = await SceneLoader.ImportMeshAsync(
+      "",
+      "./Model/",
+      "vintage_pocket_watch_1k.glb",
+      this.scene
+    );
+    // 删除根部模型
+    meshes.shift();
+    // 合并零碎模型进行动画
+    this.target = Mesh.MergeMeshes(
+      meshes as Mesh[],
+      true,
+      true,
+      undefined,
+      false,
+      true
+    ) as AbstractMesh;
+    this.target.scaling = new Vector3(50, 50, 50);
+    this.target.position = new Vector3(0, 2, 0);
+    this.target.rotation = new Vector3(0, Math.PI / 1, 0);
+```
+
 #### 调整贴图的密度尺寸
 
 ```js
@@ -539,6 +564,53 @@ this.scene.onPointerDown = () => {
 ```js
 this.engine.displayLoadingUI(); // 启用默认加载动画
 this.engine.hideLoadingUI(); // 关闭默认加载动画
+```
+
+### 动画
+
+#### 创建动画
+
+```js
+const fps = 60;
+const rotateFrames = [];
+const rotateAnim = new Animation(
+  "rotateAnim",
+  "rotation.z",
+  fps,
+  Animation.ANIMATIONTYPE_FLOAT,
+  Animation.ANIMATIONLOOPMODE_CYCLE
+);
+rotateFrames.push({ frame: 0, value: 0 });
+rotateFrames.push({ frame: 180, value: Math.PI / 2 });
+rotateAnim.setKeys(rotateFrames);
+this.target.animations.push(rotateAnim);
+
+// 循环播放所有动画
+// this.scene.beginAnimation(this.target, 0, 180, true);
+// 循环播放数组中的动画
+const AnimationControll = this.scene.beginDirectAnimation(
+  this.target,
+  [rotateAnim, sliderAnim],
+  0,
+  180,
+  true,
+  1,
+  onAnimationEnd
+);
+
+const onAnimationEnd = () => {
+  console.log("animationEnd");
+  this.target.setEnabled(false);
+};
+```
+
+#### 等待动画的调用
+
+```js
+await this.scene
+  .beginDirectAnimation(this.target, [fadesAnim], 0, 180)
+  .waitAsync();
+AnimationControll.stop();
 ```
 
 # 注意事项
