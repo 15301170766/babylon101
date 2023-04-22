@@ -673,6 +673,24 @@ animationGroups[0].play(true);
   }
 ```
 
+#### 动画解析,给第 n 帧添加触发事件
+
+```js
+const attactAnim = animationGroups[1].targetedAnimations[0].animation;
+// 第50帧触发的事件
+const attactEvent = new AnimationEvent(
+  50,
+  () => {
+    // 第50帧触发事件
+    this.animationGroups[0].stop();
+    this.animationGroups[2].play(true);
+  },
+  false
+);
+// 给解析动画添加事件
+attactAnim.addEvent(attactEvent);
+```
+
 # 注意事项
 
 ### 导入模型时,需要引入@babylonjs/loader
