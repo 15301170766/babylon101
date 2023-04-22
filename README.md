@@ -691,6 +691,33 @@ const attactEvent = new AnimationEvent(
 attactAnim.addEvent(attactEvent);
 ```
 
+#### 模型上的多动画渐变
+
+```js
+//  通过设置权重达到一个动画切换渐变效果 // 没有成功
+  *animationBlending(
+    toAnim: AnimationGroup,
+    fromAnim: AnimationGroup
+  ): AsyncCoroutine<void> {
+    let currentWeight = 1;
+    let newWeight = 0;
+    toAnim.play(true);
+    while (newWeight < 1) {
+      newWeight += 0.01;
+      currentWeight -= 0.01;
+      toAnim.setWeightForAllAnimatables(newWeight);
+      fromAnim.setWeightForAllAnimatables(currentWeight);
+      yield;
+    }
+  }
+
+  this.scene.onPointerDown = () => {
+      this.scene.onBeforeRenderObservable.runCoroutineAsync(
+        this.animationBlending(run, idle)
+      );
+    };
+```
+
 # 注意事项
 
 ### 导入模型时,需要引入@babylonjs/loader

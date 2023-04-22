@@ -6,7 +6,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { BasicSence } from "./example/AnimEvents";
+import { BasicSence } from "./example/AnimBlending";
 onMounted(() => {
   let canvas = document.getElementById("babylonCanvas") as HTMLCanvasElement;
   new BasicSence(canvas);
